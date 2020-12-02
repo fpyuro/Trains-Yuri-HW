@@ -59,7 +59,7 @@ namespace Trains
         }
         public void SortByDestinationAndTime() //сортировка по пункту назначения и времени отпрвления
         {
-
+            //закончить list sort
         }
     }
     class Program
