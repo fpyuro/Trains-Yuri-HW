@@ -48,18 +48,35 @@ namespace Trains
                 if (i.TrainNumber == trNmb)
                 {
                     Console.WriteLine($"Поезд номер: {i.TrainNumber}\n" +
-                    $"Время отправления {i.DepartureTime}\n" +
-                    $"Пункт назначения {i.NameOfDestination}\n\n");
+                    $"Дата отправления {i.DepartureTime.Day}" + "." + $"{i.DepartureTime.Month}" + "." + $"{i.DepartureTime.Year}\n" +
+                    $"Пункт назначения {i.NameOfDestination}");
                 }
             }
         }
         public void sortTrainByNumbers() //сортировка по номеру поезда
         {
-            trains.Sort();
+            trains.Sort((x,y)=> { return (int)x.TrainNumber - (int)y.TrainNumber; });
         }
         public void SortByDestinationAndTime() //сортировка по пункту назначения и времени отпрвления
         {
-            //закончить list sort
+            trains.Sort((x, y) =>
+            {
+                if(x.NameOfDestination.Equals(y.NameOfDestination))
+                {
+                    if (x.DepartureTime < y.DepartureTime) return -1;
+                    else return 1;
+                }
+                else
+                {
+                    for(int i = 0; i < (x.NameOfDestination.Length < y.NameOfDestination.Length ? x.NameOfDestination.Length : y.NameOfDestination.Length); ++i)
+                    {
+                        if (x.NameOfDestination[i] < y.NameOfDestination[i]) return -1;
+                        if (x.NameOfDestination[i] > y.NameOfDestination[i]) return 1;
+                        if (i == (x.NameOfDestination.Length < y.NameOfDestination.Length ? x.NameOfDestination.Length : y.NameOfDestination.Length) - 1) return 1;
+                    }
+                    return 1;
+                }
+            });
         }
     }
     class Program
@@ -68,25 +85,28 @@ namespace Trains
         static void Main(string[] args)
         {
             string[] station = {"station 1" , "station 2", "station 3", "station 4",
-                "station 5", "station 6","station 7","station 8", "station 9",
-                "station 10","station 11"};
+                "station 5", "station 6","station 7","station 8", "station 9"};
             Trains trainsReady = new Trains();
-            DateTime endTime = new DateTime(2020, 12, 31);
+            DateTime endTime = new DateTime(2020, 12, 31); //сстроки 74-75 написаны для создания даты со случайным начением дня
             int range = (endTime - DateTime.Today).Days;
 
-            for (uint i = 0; i < 5; ++i)
+            for (uint i = 20; i > 0; --i)
             {
-                DateTime d = DateTime.Today.AddDays(rand.Next(range)); //случайная дата
-                trainsReady.addTrain(new Train(i + 1, station[rand.Next(10)], d));
+                DateTime d = DateTime.Today.AddDays(rand.Next(range)); //случайная дата(случайныйтолько день месяца)
+                trainsReady.addTrain(new Train(i + 1, station[rand.Next(9)], d));
             }
 
 
-
+            Console.WriteLine("\nСоздали штук 20 поездов, с отпракой в разные дни:\n");
             trainsReady.Show();
+            Console.WriteLine("Информация о 4 поезде:\n");
             trainsReady.infoAboutTrain(2);
-
-            
-
+            Console.WriteLine("Сортируем поезда по номерам:\n");
+            trainsReady.sortTrainByNumbers();
+            trainsReady.Show();
+            Console.WriteLine("Сортируем поезда по станции назначения и дате отправки:\n");
+            trainsReady.SortByDestinationAndTime();
+            trainsReady.Show();
             Console.ReadLine();
         }
     }
